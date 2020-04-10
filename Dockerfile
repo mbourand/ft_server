@@ -28,6 +28,7 @@ RUN wget https://files.phpmyadmin.net/phpMyAdmin/4.9.5/phpMyAdmin-4.9.5-all-lang
 COPY srcs/config.inc.php /var/www/localhost/phpmyadmin/config.inc.php
 
 # database setup (permissions, phpmyadmin required tables/user)
+COPY srcs/wordpress.sql /tmp
 COPY srcs/database_setup.sh /tmp
 RUN sh /tmp/database_setup.sh
 
