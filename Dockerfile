@@ -33,7 +33,7 @@ COPY srcs/database_setup.sh /tmp
 RUN sh /tmp/database_setup.sh
 
 # ssl setup
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt \
+ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt \
 	-subj "/C=FR/ST=Paris/L=City/O=ft_server inc./OU=Nothing/CN=localhost/emailAddress=admin@localhost.com" && \
 	openssl dhparam -out /etc/nginx/dhparam.pem 1024
 COPY srcs/self-signed.conf /etc/nginx/snippets/self-signed.conf
