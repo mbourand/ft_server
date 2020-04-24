@@ -39,7 +39,7 @@ server {
 server {
     listen 80;
     listen [::]:80;
-
+    root /var/www/localhost;
     server_name localhost;
 
     return 302 https://$server_name$request_uri;

@@ -53,5 +53,5 @@ COPY srcs/run-services.sh /tmp
 CMD ["sh", "/tmp/run-services.sh"]
 
 
-# To build the image run 'docker build -t mbourand/ft_server:1.0 .'
-# To run the container run 'docker run -p 8080:80 -p 443:443 -d mbourand/ft_server:1.0'
+# To build the image run 'docker build --ulimit nofile=1024 -t mbourand/ft_server:1.0 .'
+# To run the container run 'docker run -p 80:80 -p 443:443 -d mbourand/ft_server:1.0'
