@@ -17,6 +17,16 @@ Pour faire fonctionner le projet, vous aurez besoin d'installer [docker](https:/
 - Pour démarrer le container sans index :
 ```docker run -p 80:80 -p 443:443 -d -e AUTOINDEX=off mbourand/ft_server:1.0```
 
+### Utilisateurs phpMyAdmin et Wordpress
+
+#### phpMyAdmin 
+- Utilisateur : ``pma``
+- Mot de passe : ``password``
+
+#### Wordpress
+- Utilisateur : ``mbourand``
+- Mot de passe : ``password``
+
 ## Screenshots
 
 - Index d'nginx
