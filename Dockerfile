@@ -3,21 +3,18 @@ FROM debian:buster
 # to avoid prompts during installs
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt -y update && apt -y upgrade
-
 # install nginx, mariadb, php and its extensions
-RUN apt -y install wget
-RUN apt -y install nginx
-RUN apt -y install mariadb-server
-RUN apt -y install php php-fpm php-mysql php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip
-RUN apt -y install curl
+RUN apt -y update && \
+	apt -y upgrade && \
+	apt -y install wget nginx mariadb-server \
+	php php-fpm php-mysql php-curl php-gd php-intl php-mbstring php-soap php-xml php-xmlrpc php-zip
 
 # create directory structure
-RUN mkdir -p /var/www/localhost/phpmyadmin /var/www/localhost/wordpress
 COPY srcs/localhost /etc/nginx/sites-available
-RUN rm -Rf /etc/nginx/sites-enabled/* && \
-	ln -s /etc/nginx/sites-available/localhost /etc/nginx/sites-enabled
-RUN chown -R www-data:www-data /var/www/* && chmod -R 755 /var/www/*
+RUN mkdir -p /var/www/localhost/phpmyadmin /var/www/localhost/wordpress && \
+	rm -Rf /etc/nginx/sites-enabled/* && \
+	ln -s /etc/nginx/sites-available/localhost /etc/nginx/sites-enabled && \
+	chown -R www-data:www-data /var/www/* && chmod -R 755 /var/www/*
 
 # phpmyadmin setup
 RUN wget https://files.phpmyadmin.net/phpMyAdmin/4.9.5/phpMyAdmin-4.9.5-all-languages.tar.gz && \
@@ -28,16 +25,14 @@ RUN wget https://files.phpmyadmin.net/phpMyAdmin/4.9.5/phpMyAdmin-4.9.5-all-lang
 COPY srcs/config.inc.php /var/www/localhost/phpmyadmin/config.inc.php
 
 # database setup (permissions, phpmyadmin required tables/user)
-COPY srcs/wordpress.sql /tmp
-COPY srcs/database_setup.sh /tmp
+COPY srcs/wordpress.sql srcs/database_setup.sh /tmp/
 RUN sh /tmp/database_setup.sh
 
 # ssl setup
- RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt \
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt \
 	-subj "/C=FR/ST=Paris/L=City/O=ft_server inc./OU=Nothing/CN=localhost/emailAddress=admin@localhost.com" && \
 	openssl dhparam -out /etc/nginx/dhparam.pem 1024
-COPY srcs/self-signed.conf /etc/nginx/snippets/self-signed.conf
-COPY srcs/ssl-params.conf /etc/nginx/snippets/ssl-params.conf
+COPY srcs/self-signed.conf srcs/ssl-params.conf /etc/nginx/snippets/
 
 # wordpress setup
 COPY srcs/wordpress-5.4.tar.gz .
@@ -49,10 +44,10 @@ RUN cp -a wordpress/. /var/www/localhost/wordpress
 EXPOSE 80 443
 
 # start services
-COPY srcs/run-services.sh .
-COPY srcs/set-autoindex.sh .
+COPY srcs/run-services.sh srcs/set-autoindex.sh ./
 CMD ["sh", "run-services.sh"]
 
 
-# To build the image run 'docker build --ulimit nofile=1024 -t mbourand/ft_server:1.0 .'
-# To run the container run 'docker run -p 80:80 -p 443:443 -d mbourand/ft_server:1.0'
+# To build the image, run 'docker build --ulimit nofile=1024 -t mbourand/ft_server:1.0 .'
+# To run the container, run 'docker run -p 80:80 -p 443:443 -d mbourand/ft_server:1.0'
+# To run the container without autoindex, run 'docker run -p 80:80 -p 443:443 -d -e AUTOINDEX=off mbourand/ft_server:1.0'
