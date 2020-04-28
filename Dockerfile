@@ -49,8 +49,9 @@ RUN cp -a wordpress/. /var/www/localhost/wordpress
 EXPOSE 80 443
 
 # start services
-COPY srcs/run-services.sh /tmp
-CMD ["sh", "/tmp/run-services.sh"]
+COPY srcs/run-services.sh .
+COPY srcs/set-autoindex.sh .
+CMD ["sh", "run-services.sh"]
 
 
 # To build the image run 'docker build --ulimit nofile=1024 -t mbourand/ft_server:1.0 .'
